@@ -46,40 +46,37 @@ module alu (
 );
     // TODO: Fill in your implementation here.
 	// Major operation selection.
-wire [2,0]x,[2,0]a,[2,0]s, [2,0]sll, [2,0]slt,[2,0]slx,[2,0]sltu, [2,0]exclor, [2,0]srx,[2,0]srl,[2,0]sra, [2,0]orw, [2,0]andw;
-
+wire x, a, s, sll, slt_flag, slx, sltu_flag, exclor, srx, srl, sra, orw, andw;
+	
 assign x = !i_opsel[2] && !i_opsel[1] && !i_opsel[0];    // 3'b000: addition/subtraction if `i_sub` asserted
 assign a = x && !i_sub;
 assign s = x && i_sub;
-assign sll = !i_opsel[2:1] && i_opsec[0];    // 3'b001: shift left logical
-			    // 3'b010,
+
+assign sll = !i_opsel[2] && !i_opsel[1] && i_opsel[0];    // 3'b001: shift left logical
+			    								// 3'b010,
 assign slx = (!i_opsel[2] && i_opsel[1] && !i_opsel[0] ) || (!i_opsel[2] && i_opsel[1] && i_opsel[0] );  // 3'b011: set less than/unsigned if `i_unsigned` asserted
 assign slt = slx && !i_unsigned;
-assign sltu = slx && i_unsigned;    // 3'b100: exclusive or
+assign sltu = slx && i_unsigned;
+assign exor = i_opsel[2] && !i_opsel[1] && !i_opsel[0];
 assign srx = i_opsel[2] && !i_opsel[1] && i_opsel[0];    // 3'b101: shift right logical/arithmetic if `i_arith` asserted
 assign srl = srx && !i_arith;
 assign sra = srx && i_arith;
-assign orw = i_opsel[2] && i_opsel[1] && !i_opsel[0]	// 3'b110: or
-assign andw = i_opsel[2] && i_opsel[1] && i_opsel[0]   // 3'b111: and
-wire dongle[31:0];
-// add
-assign o_result = (i_op1 + i_op2) && a;
-// sub
+assign orw = i_opsel[2] && i_opsel[1] && !i_opsel[0];    // 3'b110: or
+assign andw = i_opsel[2] && i_opsel[1] && i_opsel[0];   // 3'b111: and
+	
+assign o_eq = (i_op1 == i_op2);
+assign o_slt = sltu ? (i_op1 < i_op2) : slt? ($signed(i_op1) < $signed(i_op2)) : 1'b0;
 
-// sll 
-
-// slt
-
-// sltu
-
-// srl
-
-// sra
-
-// or
-
-// and
+assign o_result = ( {32{a}}      & (i_op1 + i_op2) )
+                | ( {32{s}}      & (i_op1 - i_op2) )
+                | ( {32{sll}}    & (i_op1 << i_op2[4:0]) )
+                | ( {32{slx}}    & {31'b0, o_slt} )
+                | ( {32{exclor}} & (i_op1 ^ i_op2) )
+                | ( {32{srl}}    & (i_op1 >> i_op2[4:0]) )
+                | ( {32{sra}}    & ($signed(i_op1) >>> i_op2[4:0]) )                    | ( {32{orw}}    & (i_op1 | i_op2) )
+                | ( {32{andw}}   & (i_op1 & i_op2) );
 endmodule
 
 `default_nettype wire
+
 
