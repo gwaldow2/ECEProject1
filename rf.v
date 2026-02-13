@@ -39,6 +39,24 @@ module rf #(
     input  wire [31:0] i_rd_wdata
 );
     // TODO: Fill in your implementation here.
+    reg [31:0] regs [31:0];
+    integer i;
+    always @(posedge i_clk) begin
+        // clear all regs
+        if (i_rst) begin
+                regs[i] <= 32'b0;
+            end
+        end else begin
+            // Write enabled + dst is not 0
+            if (i_rd_wen && (i_rd_waddr!=5'b0)) begin
+                regs[i_rd_waddr] <= i_rd_wdata;
+            end
+        end
+    end
+    // async ports:
+    assign o_rs1_rdata = (i_rs1_raddr == 5'b0)? 32'b0 : (BYPASS_EN && i_rd_wen && (i_rd_waddr == i_rs1_raddr))? i_rd_wdata : regs[i_rs1_raddr];
+    assign o_rs2_rdata = (i_rs2_raddr == 5'b0)? 32'b0 : (BYPASS_EN && i_rd_wen && (i_rd_waddr == i_rs2_raddr))? i_rd_wdata : regs[i_rs2_raddr];
 endmodule
 
 `default_nettype wire
+
