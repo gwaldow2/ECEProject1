@@ -1,0 +1,21 @@
+Author: Grant Waldow
+[Q0] If the encoding format is wrong, the instruction and data that is processed will be nonsensical and could cause errors even beyond the bounds of the program. In R-type instructions, an immediate value is not used. 
+
+[Q1] This ISA has a word length of 4 bytes. Therefore the memory address of any instruction will be even, so branch and jump instructions do not need the LSB. A bit which is always 0 is a waste of an instruction bit, which could otherwise be used to extend the pcoffset range.
+
+[Q2] This convoluted ordering is more efficient for the computer hardware since it requires fewer multiplexers. The complexity can be handled by the compiler instead.
+
+[Q3] The instruction should be ignored, since x0 must be constant and overwriting it would break all programs which use it. Therefore, it is best if the hardware is constructed to ignore all writes to x0.
+
+[Q4] Accessing the register file takes longer than the PC register, and takes read/write inputs, which would break the instruction processing pattern in the current architecture. If it were included, instructions would have to make at least two reads to the register file.
+
+[Q5] 
+Increase: more bits would have to be allocated to register specification in each instruction, taking away available bits from things like immediate values. Alternatively, longer instructions could be used which could require sweeping hardware changes. You would have to increase the depth of the register file.
+
+Decrease: Fewer bits allocated to each register if there are 16 or fewer registers in the new design. If the decrease is only to 17-31 registers, no changes would be made to the ISA or hardware besides changing the depth of the register file.
+
+[Q6] These components will be re-used since they are still integral to the computer’s hardware. However, there are missing components that will need to be made such as PC, Memory, Register file. There will also be several MUX components. A control unit will be required to decode the instruction.The outputs from the imm.v file will be fed to other hardware components.
+
+[Q7] In the previous assignment, I made a software multiply operation. To create a hardware multiply instruction, a new component would have to be made- or the ALU would have to be extended. The ISA would need to accommodate this operation with a new Opcode. The control unit would have to be rewired to handle the new opcode appropriately.
+
+[Q8] This would be possible; it would require changes to many components including imm.v and rf.. The 16 bit ISA would need to be decoded differently by the immediate encoder. The register file would be smaller since there would be less room for register addresses in each instruction. The ALU would not need changes since its operations are bit-length-invariant.
