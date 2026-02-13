@@ -67,15 +67,15 @@ assign andw = i_opsel[2] && i_opsel[1] && i_opsel[0];   // 3'b111: and
 assign o_eq = (i_op1 == i_op2);
 assign o_slt = sltu ? (i_op1 < i_op2) : slt? ($signed(i_op1) < $signed(i_op2)) : 1'b0;
 
-assign o_result = ( {32{a}}      & (i_op1 + i_op2) )
-                | ( {32{s}}      & (i_op1 - i_op2) )
-                | ( {32{sll}}    & (i_op1 << i_op2[4:0]) )
-                | ( {32{slx}}    & {31'b0, o_slt} )
-                | ( {32{exor}} & (i_op1 ^ i_op2) )
-                | ( {32{srl}}    & (i_op1 >> i_op2[4:0]) )
-                | ( {32{sra}}    & ($signed(i_op1) >>> i_op2[4:0]) )                    
-		| ( {32{orw}}    & (i_op1 | i_op2) )
-                | ( {32{andw}}   & (i_op1 & i_op2) );
+assign o_result = ( {32{a}} & (i_op1 + i_op2))
+                | ( {32{s}} & (i_op1 - i_op2))
+                | ( {32{sll}} & (i_op1 << i_op2[4:0]))
+                | ( {32{slx}} & {31'b0, o_slt})
+                | ( {32{exor}} & (i_op1 ^ i_op2))
+                | ( {32{srl}} & (i_op1 >> i_op2[4:0]))
+                | ( {32{sra}}& $signed($signed(i_op1) >>> i_op2[4:0]) )  // bruh                  
+		| ( {32{orw}} & (i_op1 | i_op2))
+                | ( {32{andw}} & (i_op1 & i_op2));
 endmodule
 
 `default_nettype wire
