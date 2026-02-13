@@ -46,7 +46,7 @@ module alu (
 );
     // TODO: Fill in your implementation here.
 	// Major operation selection.
-wire x, a, s, sll, slt_flag, slx, sltu_flag, exclor, srx, srl, sra, orw, andw;
+wire x, a, s, sll, slt, slx, sltu, exor, srx, srl, sra, orw, andw;
 	
 assign x = !i_opsel[2] && !i_opsel[1] && !i_opsel[0];    // 3'b000: addition/subtraction if `i_sub` asserted
 assign a = x && !i_sub;
@@ -71,12 +71,12 @@ assign o_result = ( {32{a}}      & (i_op1 + i_op2) )
                 | ( {32{s}}      & (i_op1 - i_op2) )
                 | ( {32{sll}}    & (i_op1 << i_op2[4:0]) )
                 | ( {32{slx}}    & {31'b0, o_slt} )
-                | ( {32{exclor}} & (i_op1 ^ i_op2) )
+                | ( {32{exor}} & (i_op1 ^ i_op2) )
                 | ( {32{srl}}    & (i_op1 >> i_op2[4:0]) )
-                | ( {32{sra}}    & ($signed(i_op1) >>> i_op2[4:0]) )                    | ( {32{orw}}    & (i_op1 | i_op2) )
+                | ( {32{sra}}    & ($signed(i_op1) >>> i_op2[4:0]) )                    
+		| ( {32{orw}}    & (i_op1 | i_op2) )
                 | ( {32{andw}}   & (i_op1 & i_op2) );
 endmodule
 
 `default_nettype wire
-
 
